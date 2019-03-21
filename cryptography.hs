@@ -72,7 +72,59 @@ q
 Goodbye!
 
 -}
+import Control.Monad
+allchar = zip [1..] [' '..'z']
+chartonum c = head [fst x | x <- allchar, snd x == c]
+numtochar n = head [snd x | x <- allchar, fst x == n]
+td = (read :: String -> Double)
 
-associations = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 .,:;'\"/\\<>(){}[]-=_+?!"
+addit t = let p = sum [fst t, snd t]
+          in if p > 91
+          then p - 91
+          else p
+          
+subit e = let p = snd e - fst e
+          in if p < 1
+          then p + 91
+          else p
 
-main = putStrLn "Put your program here!"
+getkey k m = let rep = (round ((td $ show $ length m) / (td $ show $ length k)) + 1) -- dont worry about all this :)
+                 ks = take rep $ repeat k                                           -- this too 
+             in map chartonum $ unwords ks
+ 
+encrypt = do
+    putStrLn "Message: "
+    m' <- getLine
+    putStrLn "Key: "
+    k' <- getLine
+    let m = map chartonum m'
+        key' = getkey k' m'
+        key = zip key' m
+        added = map addit key
+    putStrLn $ map numtochar added
+    main
+    
+decrypt = do
+    putStrLn "Message: "
+    m' <- getLine
+    putStrLn "Key: "
+    k' <- getLine
+    let m = map chartonum m'
+        key' = getkey k' m'
+        key = zip key' m
+        subbed = map subit key
+    putStrLn $ map numtochar subbed
+    main
+
+main = do
+    putStrLn "Enter e to encrypt, d to decrypt, or q to quit: "
+    verdict <- getLine
+    if verdict == "e"
+    then encrypt
+    else if verdict == "d"
+    then decrypt
+    else if verdict == "q"
+    then putStrLn "Goodbye!"
+    else do
+        putStrLn "Did not understand command, try again."
+        main
