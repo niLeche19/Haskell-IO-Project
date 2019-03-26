@@ -73,24 +73,28 @@ Goodbye!
 
 -}
 import Control.Monad
-allchar = zip [1..] [' '..'z']
+allchar = zip [0..] "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 .,:;'\"/\\<>(){}[]-=_+?!"
 chartonum c = head [fst x | x <- allchar, snd x == c]
 numtochar n = head [snd x | x <- allchar, fst x == n]
 td = (read :: String -> Double)
 
+comb (x : []) = x
+comb (x : xs) = x ++ comb xs
+
 addit t = let p = sum [fst t, snd t]
-          in if p > 91
-          then p - 91
+          in if p > 84
+          then p - 84
           else p
           
 subit e = let p = snd e - fst e
-          in if p < 1
-          then p + 91
+          in if p < 0
+          then p + 84
           else p
 
 getkey k m = let rep = (round ((td $ show $ length m) / (td $ show $ length k)) + 1) -- dont worry about all this :)
-                 ks = take rep $ repeat k                                           -- this too 
-             in map chartonum $ unwords ks
+                 ks = take rep $ repeat k     -- this too 
+                 a x = x :: String
+             in map chartonum $ comb ks
  
 encrypt = do
     putStrLn "Message: "
